@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Resellers Dashboard + Push</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #FFFDF2}
+    h1, h2 { color: #2196F3; }
+    .dashboard { margin-bottom: 20px; width: 100%;margin-top: 50px; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 30px; }
+    th, td { border-bottom: 0.5px solid #FFEBB4; padding: 25px 5px; text-align: left; overflow-x: scroll}
+    th { background-color: #FAC205; color: black; }
+    tr:nth-child(even) { background-color: #fff; }
+    .true-row { background-color: #fff; }
+    button.copy-btn {color: black; background: #FAC205; border: none; border-radius: 5px; padding: 5px 20px; margin-left: 20px;}
+    button.register-btn { padding: 10px 40px; background-color: #0035B3; color: white; border: none; cursor: pointer; border-radius: 50px; align-items: center; justify-content: center;display: flex;margin-top: 10px; margin-left: 10px;}
+    button.register-btn:hover { background-color: #0035B3; }
+    /* FALSE cards */
+    #falseContainer { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .false-card { border-radius: 14px; padding: 10px; background-color: #fff; width: 100%; }
+    .false-card p { margin-top:15px; font-size:18px; }
+  </style>
+</head>
+<body>
+  <style type="text/css">
+    .lockclass{
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0px;
+      bottom: 0;
+      background: white;
+    }
+    .lockImg{ width: 60%; margin-left: 20%; margin-top: 100px; }
+    .input{ margin-top: 100px; }
+    .input p{ margin-left: 5%; font-size: 16px; }
+    .input label{ margin-left: 5%; font-size: 16px; color: red; font-weight: bold; }
+    .input input{
+      width: 90%; margin-left: 5%; height: 50px; background: #FEFFE8; font-size: 30px;
+      border: 0.5px solid #C9CAB7; outline: none; border-radius: 13px; text-align: center; margin-bottom: 10px;
+    }
+    .input button{
+      background: #0035B3; color: white; border-radius: 50px; padding: 15px 30px; margin-bottom: 20px;
+      text-align: center; border: none; font-size: 17px; margin-top: 30px; width: 40%; margin-left: 30%;
+    }
+    .sponsor{ position: fixed; padding-bottom: 100px; right: 0; left: 0px; bottom: 0; background: white; text-align: center; }
+    .changePassword{ position: fixed; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); }
+    .changeB{ background: #fff; color: #111; width: 90%; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); margin-left: 5%; margin-top: 30vh; }
+    .changeB label{ margin-left: 5%; }
+    .changeB input{
+      width: 85%; height: 50px; background: #FEFFE8; font-size: 15px; border: 0.5px solid #C9CAB7;
+      outline: none; padding-left: 2.5%; padding-right: 2.5%; border-radius: 10px; text-align: left;
+      margin-bottom: 10px; margin-top: 10px;
+    }
+    .changeBtn{ background: #0035B3; color: white; border-radius: 50px; padding: 15px 30px; margin-bottom: 20px; text-align: center; border: none; font-size: 17px; margin-top: 10px; }
+    .closeChange{ background: #FAC205; color: black; border-radius: 50px; padding: 15px 30px; margin-bottom: 20px; text-align: center; border: none; font-size: 17px; margin-top: 10px; }
+  </style>
+
+  <div class="changePassword" style="display: none;">
+    <div class="changeB">
+      <center><h3>Change password</h3></center>
+      <label id="label1">Enter current password</label>
+      <center><input type="password" maxlength="4" placeholder="Current password" id="currentPass"></center>
+      <label id="label2">Enter new password</label>
+      <center><input type="password" maxlength="4" placeholder="New password" id="newPass"></center>
+      <label id="label3">Current password</label>
+      <center>
+        <input type="password" maxlength="4" placeholder="Confirm password" id="confirmPass">
+        <button class="changeBtn" id="changeBtn">Change Password</button>
+        <button class="closeChange" id="closeChange">Close</button>
+      </center>
+    </div>
+  </div>
+
+  <!-- <div class="lockclass">
+    <img src="binance-h.png" class="lockImg">
+    <div class="input">
+      <p>Enter PASSCODE</p>
+      <input type="password" id="passcode" placeholder="####" maxlength="4">
+      <label style="display: none;" id="labelC">incorrect password</label>
+      <button id="passBtn">Unlock</button>
+    </div>
+    <div class="sponsor">
+      <p>from</p>
+      <img class="sponsorImg" src="sponsor.png">
+    </div>
+  </div> -->
+
+<!-- Popup -->
+<div class="pupupshadow" style="display: none;">
+  <div id="popup" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-xl shadow-xl w-96 text-center">
+      <h3 class="text-xl font-bold mb-4" id="popupTitle">Popup Title</h3>
+      <p id="popupMessage" class="mb-4">Popup message goes here...</p>
+      <center><button onclick="closePopup(); //<!-- ;//" class="bg-blue-500 text-white px-4 py-2 rounded" id="ok">OK</button></center>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="confirmshadow" style="display: none;">
+  <div id="confirmBox" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white p-6 rounded shadow-lg w-80 text-center">
+      <h3>Confirmation</h3>
+      <p id="confirmMessage" class="mb-4 text-lg font-semibold">Are you sure you want to register Farxaan maxamed xuseen}</p>
+      <div class="flex justify-around">
+        <center>
+          <button id="confirmYes" class="bg-green-500 text-white px-4 py-2 rounded" onclick="showPopup(); ">Yes</button>
+          <button id="confirmNo" class="bg-red-500 text-white px-4 py-2 rounded" onclick="">No</button>
+        </center>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  const confirmYes = document.getElementById('confirmYes');
+  const confirmNo = document.getElementById('confirmNo');
+  const ok = document.getElementById('ok');
+  const confirmshadow = document.querySelector('.confirmshadow');
+  const pupupshadow = document.querySelector('.pupupshadow');
+
+  const lockclass = document.querySelector('.lockclass');
+  const passcode = document.getElementById('passcode');
+  const labelC = document.getElementById('labelC');
+  const passBtn = document.getElementById('passBtn');
+
+  // // Keys & timer setup
+  // const TIMER_KEY = "unlock_until";
+  // const DURATION = 59 * 1000; // 59 seconds (adjust if you want longer)
+
+  // // Check lock/unlock
+  // function checkLock() {
+  //   const now = Date.now();
+  //   const unlockUntil = parseInt(localStorage.getItem(TIMER_KEY) || "0", 10);
+  //   if (now < unlockUntil) {
+  //     lockclass.style.display = "none";  // unlocked
+  //     passcode.value = "";
+  //   } else {
+  //     lockclass.style.display = "block"; // locked
+  //   }
+  // }
+
+  // // Reset function
+  // function  {
+  //   const newUnlockTime = Date.now() + DURATION;
+  //   localStorage.setItem(TIMER_KEY, newUnlockTime);
+  //   checkLock();
+  // }
+
+  // // Passcode check
+  // passBtn.addEventListener("click", () => {
+  //   if (passcode.value == localStorage.getItem("passcode")) {
+  //     //<!-- ;// // start timer after correct passcode
+  //   } else {
+  //     labelC.style.display = "block";
+  //   }
+  // });
+
+  // // Keep checking lock/unlock every second
+  // setInterval(checkLock, 1000);
+  // checkLock();
+
+  // passcode.addEventListener("click", () => {
+  //   labelC.style.display = "none";
+  //   passcode.value = "";
+  // });
+
+  confirmYes.addEventListener("click", () => {
+    confirmshadow.style.display = "none";
+    pupupshadow.style.display = "block";
+  });
+  ok.addEventListener("click", () => { pupupshadow.style.display = "none"; });
+  confirmNo.addEventListener("click", () => { confirmshadow.style.display = "none"; });
+
+  // Popup helpers
+  function showPopup(title, message) {
+    document.getElementById("popupTitle").innerText = title;
+    document.getElementById("popupMessage").innerText = message;
+    document.getElementById("popup").classList.remove("hidden");
+    pupupshadow.style.display = "block";
+  }
+  function closePopup() { document.getElementById("popup").classList.add("hidden"); pupupshadow.style.display = "none"; }
+
+</script>
+
+<style type="text/css">
+  /* (kept the rest of your CSS exactly same) */
+  .pupupshadow{ position: fixed; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); }
+  #popup{ background: #fff; color: #111; width: 90%; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); margin-left: 5%; margin-top: 30vh; }
+  #popup h3{ text-align: center; }
+  #popup p{ padding-left: 10px; margin-left: 10px; margin-right: 10px; padding-bottom: 20px; }
+  #ok{ background: #0035B3; color: white; border-radius: 50px; padding: 10px 40px; margin-bottom: 20px; align-items: center; justify-content: center; border: none; font-size: 17px; }
+  .confirmshadow{ position: fixed; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); }
+  #confirmBox{ background: #fff; color: #111; width: 90%; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); margin-left: 5%; margin-top: 30vh; }
+  #confirmBox h3{ text-align: center; } #confirmBox p{ padding-left: 10px; margin-left: 10px; margin-right: 10px; padding-bottom: 20px; }
+  #confirmYes{ background: #0035B3; color: white; border-radius: 50px; padding: 10px 30px; margin-bottom: 20px; align-items: center; justify-content: center; border: none; font-size: 17px; }
+  #confirmNo{ background: #FAC205; color: black; border-radius: 50px; padding: 10px 30px; margin-bottom: 20px; align-items: center; justify-content: center; border: none; font-size: 17px; }
+  .menu{ position: fixed; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); }
+  .menuBg{ position: fixed; top: 0; right: 0; left: 100px; bottom: 0; background: white; }
+  .menuBgBtnDiv{ position: fixed; padding: 20px; right: 0; left: 100px; bottom: 0; }
+  #close{ background: #0035B3; color: white; border-radius: 50px; padding: 20px 50px; align-items: center; justify-content: center; border: none; font-size: 17px; }
+  .options{ width: 100%; padding: 5px 10px; }
+  .options p{ font-size: 19px; font-weight: bold; }
+</style>
+
+<div class="menu" style="display: none;">
+  <div class="menuBg">
+    <div class="options" id="option1" onclick=""><p>Dashboard</p></div>
+    <div class="options" id="option2" onclick=""><p>Active Customers</p></div>
+    <div class="options" id="option3" onclick=""><p>Pending Customer</p></div>
+    <div class="options" id="option4" onclick=""><p>Change PASSCODE</p></div>
+    <div class="menuBgBtnDiv"><center><button id="close" onclick="">colse menu</button></center></div>
+  </div>
+</div>
+
+<header>
+  <style type="text/css">
+    #somtel{ width: 55%; left: 5%; margin-top: 10px; }
+    #menu{ width: 10%; margin-left: 30%; margin-top: 10px; }
+    .ncustomers{ width: 45%; top: 121px; background: #0035B3; border: 0.5px solid #E8E8E8; border-radius: 9px; display: inline-block; padding-top: 20px; padding-left: 5px; padding-right: 5px; padding-bottom: 10px; }
+    .pending{ width: 45%; margin-left: 2.5%; top: 121px; background: #0035B3; border: 0.5px solid #E8E8E8; border-radius: 9px; display: inline-block; padding-top: 20px; padding-left: 5px; padding-right: 5px; padding-bottom: 10px; }
+    .ncustomers-d, .pending-d{ padding-left: 10px; padding-right: 10px; }
+    #staff, #spinner{ margin-left: 5%; display: inline-block; }
+    #trueCount, #falseCount{ color: white; font-size: 33px; font-weight: bold; margin-left: 30%; display: inline-block; }
+    .text{ color: white; margin-left: 10px; }
+    h3{ padding-top: 20px; }
+  </style>
+  <img src="binance-h.png" id="somtel">
+  <img src="menu.png" id="menu">
+</header>
+
+<div class="dashboard">
+  <div class="ncustomers" id="ncustomers" onclick="">
+    <div class="ncustomers-d"><img src="staff.png" id="staff"><span id="trueCount">0</span></div>
+    <p class="text">Total Customers</p>
+  </div>
+  <div class="pending" id="pending" onclick="">
+    <div class="pending-d"><img src="spinner.png" id="spinner"><span id="falseCount">0</span></div>
+    <p class="text">Pending Customers</p>
+  </div>
+</div>
+
+<style type="text/css">
+  .table-wrapper {
+  overflow-x: auto;  /* allows horizontal scrolling */
+  width: 100%;       /* full width */
+}
+
+.table-wrapper table {
+  width: max-content; /* ensures table can expand horizontally */
+  min-width: 100%;    /* optional: table takes at least full container width */
+}
+
+</style>
+<div class="customers" style="display: none;">
+  <h3>Active Customers</h3>
+  <div class="table-wrapper"> 
+  <table id="trueTable">
+    <thead>
+      <tr><th>Name</th><th>Operator</th><th>From Number</th><th>ToNumber</th><th>Created at</th><th>dashboardStatus</th></tr>
+    </thead>
+    <tbody><tr><td colspan="4">Loading...</td></tr></tbody>
+  </table></div>
+</div>
+
+<div class="pendingDisplay" style="display: block;">
+  <h3>Pending customers</h3>
+  <div id="falseContainer">Loading...</div>
+</div>
+
+<script>
+  const pending = document.getElementById('pending');
+  const ncustomers = document.getElementById('ncustomers');
+  const customers = document.querySelector('.customers');
+  const pendingDisplay = document.querySelector('.pendingDisplay');
+  const menu = document.querySelector('.menu');
+  const menuIMG = document.getElementById('menu');
+  const option1 = document.getElementById('option1');
+  const option2 = document.getElementById('option2');
+  const option3 = document.getElementById('option3');
+  const option4 = document.getElementById('option4');
+  const close = document.getElementById('close');
+
+  close.addEventListener("click", () => { menu.style.display = "none"; });
+  option1.addEventListener("click", () => { menu.style.display = "none"; customers.style.display = "none"; pendingDisplay.style.display = "block"; });
+  option2.addEventListener("click", () => { menu.style.display = "none"; customers.style.display = "block"; pendingDisplay.style.display = "none"; });
+  option3.addEventListener("click", () => { menu.style.display = "none"; customers.style.display = "none"; pendingDisplay.style.display = "block"; });
+  menuIMG.addEventListener("click", () => { menu.style.display = "block"; });
+  pending.addEventListener("click", () => { customers.style.display = "none"; pendingDisplay.style.display = "block"; });
+  ncustomers.addEventListener("click", () => { pendingDisplay.style.display = "none"; customers.style.display = "block"; });
+
+  // Put your deployed web app URL here (kept what you provided)
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbyE4WzeQFNo8el5fV1LMYoWYwysFt9uCtmZblU8sXVeutaqys-g-KThKU75CF6hMWhiOw/exec";
+  let lastFalseCount = 0;
+
+  // custom confirm that returns a promise
+  function confirm(message) {
+    return new Promise(resolve => {
+      const box = document.getElementById("confirmBox");
+      const msg = document.getElementById("confirmMessage");
+      const yesBtn = document.getElementById("confirmYes");
+      const noBtn = document.getElementById("confirmNo");
+      msg.textContent = message;
+      box.classList.remove("hidden");
+      confirmshadow.style.display = "block";
+
+      const cleanup = () => {
+        box.classList.add("hidden");
+        confirmshadow.style.display = "none";
+        yesBtn.removeEventListener("click", onYes);
+        noBtn.removeEventListener("click", onNo);
+      };
+      const onYes = () => { cleanup(); resolve(true); };
+      const onNo  = () => { cleanup(); resolve(false); };
+      yesBtn.addEventListener("click", onYes);
+      noBtn.addEventListener("click", onNo);
+    });
+  }
+
+  // Robust timeAgo function — parses local "YYYY-MM-DD HH:MM:SS" as local time
+  // Replace your existing timeAgo(...) with this function
+function timeAgo(input) {
+  // amount of manual offset to add to parsed timestamps (milliseconds)
+  // 12 hours = 12 * 60 * 60 * 1000
+  const MANUAL_OFFSET_MS = -12 * 60 * 60 * 1000;
+
+  // Helper: parse date-like strings into a timestamp (ms).
+  // Supports numeric timestamps, ISO strings (with Z/offsets), and "YYYY-MM-DD HH:MM:SS" or "YYYY/MM/DD HH:MM:SS"
+  function parseToMs(s) {
+    if (!s) return NaN;
+    s = String(s).trim();
+
+    // If it's numeric-only string: treat as seconds or ms
+    if (/^\d+$/.test(s)) {
+      const n = parseInt(s, 10);
+      // seconds (10 digits or less) -> ms
+      if (String(n).length <= 10) return n * 1000;
+      return n; // already ms
+    }
+
+    // Try ISO / Date.parse first (handles Z and timezone offsets)
+    const isoTry = Date.parse(s);
+    if (!isNaN(isoTry)) return isoTry;
+
+    // Try manual parse for common "YYYY-MM-DD HH:MM:SS" or "YYYY/MM/DD HH:MM:SS"
+    // Treat as local time (avoid timezone jump)
+    const m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+    if (m) {
+      const year = parseInt(m[1], 10);
+      const month = parseInt(m[2], 10);
+      const day = parseInt(m[3], 10);
+      const hh = m[4] !== undefined ? parseInt(m[4], 10) : 0;
+      const mm = m[5] !== undefined ? parseInt(m[5], 10) : 0;
+      const ss = m[6] !== undefined ? parseInt(m[6], 10) : 0;
+      return new Date(year, month - 1, day, hh, mm, ss).getTime();
+    }
+
+    // Last resort: Date.parse (may be NaN)
+    return Date.parse(s);
+  }
+
+  const tsRaw = parseToMs(input);
+  if (isNaN(tsRaw)) return "just now";
+
+  // Apply manual offset (12 hours) to compensate your sheet/HTML timezone mismatch
+  const ts = tsRaw + MANUAL_OFFSET_MS;
+
+  const now = Date.now();
+  let diffSec = Math.floor((now - ts) / 1000);
+
+  // future -> treat as just now
+  if (diffSec < 0) diffSec = 0;
+
+  if (diffSec < 60) {
+    return diffSec === 1 ? "1 second ago" : diffSec + " seconds ago";
+  }
+
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) {
+    return diffMin === 1 ? "1 minute ago" : diffMin + " minutes ago";
+  }
+
+  const diffHour = Math.floor(diffMin / 60);
+  if (diffHour < 24) {
+    return diffHour === 1 ? "1 hour ago" : diffHour + " hours ago";
+  }
+
+  const diffDay = Math.floor(diffHour / 24);
+  if (diffDay < 7) {
+    return diffDay === 1 ? "1 day ago" : diffDay + " days ago";
+  }
+
+  const diffWeek = Math.floor(diffDay / 7);
+  if (diffWeek < 4) {
+    return diffWeek === 1 ? "1 week ago" : diffWeek + " weeks ago";
+  }
+
+  const diffMonth = Math.floor(diffDay / 30); // approximate month
+  if (diffMonth < 12) {
+    return diffMonth === 1 ? "1 month ago" : diffMonth + " months ago";
+  }
+
+  const diffYear = Math.floor(diffDay / 365); // approximate year
+  return diffYear === 1 ? "1 year ago" : diffYear + " years ago";
+}
+  // Fetch sheet data and render
+  function loadData() {
+    fetch(SHEET_URL)
+      .then(res => res.json())
+      .then(data => {
+        if (data && Array.isArray(data)) renderTables(data);
+        else console.error("Invalid data:", data);
+      })
+      .catch(err => console.error("Fetch error:", err));
+  }
+
+  // renderTables — preserves your layout, fixes created/timeago and copy
+  function renderTables(data) {
+    const trueTableBody = document.querySelector("#trueTable tbody");
+    const falseContainer = document.getElementById("falseContainer");
+    let trueRows = 0, falseRows = 0;
+
+    trueTableBody.innerHTML = "";
+    falseContainer.innerHTML = "";
+
+    data.forEach((row, index) => {
+      // expected columns:
+      // 0: Name, 1: Operator, 2: ManualNumber (From), 3: ToNumber, 4: Time Created, 5: Status, 6: dashboardStatus
+      const displayName = row[0] || "";
+      const displayOperator = row[1] || "";
+      const displayFrom = row[2] || "";
+      const displayTo = row[3] || "";
+      const displayCreatedRaw = row[4] || "";
+      const statusVal = (row.length > 5) ? row[5] : (row.length ? row[row.length - 2] : null);
+      const dashboardStatus = (row.length > 6) ? row[6] : (row.length ? row[row.length - 1] : "");
+
+      const isTrue = (statusVal === true) || (typeof statusVal === 'string' && statusVal.toString().toLowerCase() === 'true');
+
+      if (isTrue) {
+        const tr = document.createElement("tr");
+        const tdName = document.createElement("td"); tdName.textContent = displayName; tr.appendChild(tdName);
+        const tdOp = document.createElement("td"); tdOp.textContent = displayOperator; tr.appendChild(tdOp);
+        const tdFrom = document.createElement("td"); tdFrom.textContent = displayFrom; tr.appendChild(tdFrom);
+        const tdTo = document.createElement("td"); tdTo.textContent = displayTo; tr.appendChild(tdTo);
+        const tdCreated = document.createElement("td"); tdCreated.textContent = timeAgo(displayCreatedRaw) || displayCreatedRaw; tr.appendChild(tdCreated);
+        const tdDash = document.createElement("td");
+        if (dashboardStatus === true || (typeof dashboardStatus === 'string' && dashboardStatus.toString().toLowerCase() === 'true')) {
+          tdDash.textContent = "Entered";
+        } else {
+          tdDash.textContent = dashboardStatus || "";
+        }
+        tr.appendChild(tdDash);
+
+        tr.classList.add("true-row");
+        trueTableBody.appendChild(tr);
+        trueRows++;
+      } else {
+        const card = document.createElement("div");
+        card.className = "false-card";
+
+        card.innerHTML = `
+          <p><strong>Name:</strong> ${displayName} <button class="copy-btn" data-copy="name">Copy Text</button></p>
+          <p><strong>Operator:</strong> ${displayOperator}</p>
+          <p><strong>From:</strong> ${displayFrom} <button class="copy-btn" data-copy="from">Copy Text</button></p>
+          <p><strong>To:</strong> ${displayTo} <button class="copy-btn" data-copy="to">Copy Text</button></p>
+          <p><strong>Created:</strong> ${timeAgo(displayCreatedRaw) || displayCreatedRaw}</p>
+        `;
+
+        const registerBtn = document.createElement("button");
+        registerBtn.textContent = "Register";
+        registerBtn.className = "register-btn";
+        registerBtn.style.marginTop = "5px";
+
+        // original confirm popup behaviour (open)
+        registerBtn.addEventListener("click", () => {
+          const confirmshadow = document.querySelector('.confirmshadow');
+          confirmshadow.style.display = "block";
+        });
+
+        // second handler: confirm -> mark status TRUE
+        registerBtn.addEventListener("click", async () => {
+          const confirmed = await confirm(`Are you sure you want to register ${displayName}?`);
+          if (confirmed) {
+            // visual loading
+            const old = registerBtn.textContent;
+            registerBtn.textContent = "Registering...";
+            registerBtn.disabled = true;
+
+            const sheetRowNum = index + 2; // header is row 1
+            const ok = await markStatusTrueForRow(sheetRowNum);
+            if (ok) {
+              showPopup(displayName, `${displayName} is registered!`);
+              // small delay to let server finish, then reload table
+              setTimeout(loadData, 900);
+            } else {
+              showPopup("Error", "Failed to register (server or CORS).");
+            }
+
+            registerBtn.textContent = old;
+            registerBtn.disabled = false;
+          }
+        });
+
+        card.appendChild(registerBtn);
+
+        // wire copy buttons
+        const copyBtnList = card.querySelectorAll(".copy-btn");
+        copyBtnList.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const which = btn.dataset.copy;
+            let text = "";
+            if (which === "name") text = displayName;
+            else if (which === "from") text = displayFrom;
+            else if (which === "to") text = displayTo;
+            navigator.clipboard.writeText(text);
+          });
+        });
+
+        falseContainer.appendChild(card);
+        falseRows++;
+      }
+    });
+
+    document.getElementById("trueCount").textContent = trueRows;
+    document.getElementById("falseCount").textContent = falseRows;
+
+    if (trueRows === 0) trueTableBody.innerHTML = '<tr><td colspan="4">No TRUE rows</td></tr>';
+    if (falseRows === 0) falseContainer.innerHTML = 'No users waiting to register';
+
+    if (falseRows > lastFalseCount) notifyFalseRows(falseRows);
+    lastFalseCount = falseRows;
+  }
+
+  // markStatusTrueForRow uses a GET "ping" so it avoids preflight CORS issues.
+  // It sends: SHEET_URL + '?action=markStatus&row=ROW&status=TRUE'
+  // We intentionally don't rely on reading the response (it may be blocked), but the server
+  // still receives the GET and should perform the update.
+  async function markStatusTrueForRow(sheetRowNum) {
+    try {
+      const url = `${SHEET_URL}?action=markStatus&row=${encodeURIComponent(sheetRowNum)}&status=TRUE`;
+      // Primary: image ping (no CORS preflight)
+      const img = new Image();
+      img.src = url + "&_=" + Date.now();
+
+      // Fallback: also try a no-cors fetch (some setups will accept it)
+      try {
+        await fetch(url, { method: 'GET', mode: 'no-cors' });
+      } catch (e) {
+        // ignore; image ping already sent
+      }
+
+      // We can't reliably parse response due to CORS; assume success and let loadData refresh.
+      return true;
+    } catch (err) {
+      console.error("markStatus error:", err);
+      return false;
+    }
+  }
+
+  // Notifications
+  function notifyFalseRows(count) {
+    if (!("Notification" in window)) return;
+    if (Notification.permission === "granted") {
+      new Notification(`${count} is ready to register`, {
+        body: `${count} are waiting for you, please register as possible`,
+        requireInteraction: true,
+        silent: false
+      });
+    }
+  }
+  if ("Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+
+  // Initial load & interval
+  loadData();
+  setInterval(loadData, 30000);
+
+  // password change UI wiring (kept original behavior)
+  const changePassword = document.querySelector('.changePassword');
+  const label1 = document.getElementById('label1');
+  const label2 = document.getElementById('label2');
+  const label3 = document.getElementById('label3');
+  const currentPass = document.getElementById('currentPass');
+  const newPass = document.getElementById('newPass');
+  const confirmPass = document.getElementById('confirmPass');
+  const changeBtn = document.getElementById('changeBtn');
+  const closeChange = document.getElementById('closeChange');
+
+  changeBtn.addEventListener("click", () => {
+    if (currentPass.value == localStorage.getItem("passcode")) {
+      if (newPass.value == confirmPass.value) {
+        localStorage.setItem("passcode", newPass.value);
+        changePassword.style.display = "none";
+      } else {
+        label3.innerText = "they don't macth";
+        label3.style.color = "red";
+      }
+    } else {
+      label1.innerText = "incorrect passcode";
+      label1.style.color = "red";
+    }
+  });
+
+  newPass.addEventListener("click", () => { label1.innerText = "Enter current password"; label1.style.color = "black"; });
+  confirmPass.addEventListener("click", () => { label3.innerText = "Enter new password"; label3.style.color = "black"; });
+  confirmPass.addEventListener("click", () => { label3.innerText = "Confirm password"; label3.style.color = "black"; });
+  option4.addEventListener("click", () => { changePassword.style.display = "block"; menu.style.display = "none"; });
+  closeChange.addEventListener("click", () => { changePassword.style.display = "none"; });
+
+</script>
+</body>
+</html>
