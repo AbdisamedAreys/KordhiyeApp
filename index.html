@@ -297,65 +297,22 @@
 
 
 
-/* ===============================
-   Random utilities (fake noise)
-================================ */
-function _r(a,b){return Math.random()*(b-a)+a}
-function _s(x){return x.split('').reverse().join('')}
-function _n(){return Date.now()%7}
-const __junk = Array.from({length:120},(_,i)=>i*_n()).map(v=>v+_r(1,9))
 
-/* ===============================
-   Fake config objects
-================================ */
-const CONFIG_A = {
-  mode: "prod",
-  env: "stable",
-  build: "v9.2." + _n(),
-  checksum: "a9f8c7d6e5"
-}
+  function _r(x){ return x.split('').reverse().join('') }
 
-const CONFIG_B = {
-  retry: 3,
-  timeout: 8000,
-  cache: false,
-  flags: ["x","y","z"]
-}
+// correct hidden parts
+const A = _r("sptth");
+const B = "://";
+const C = _r("moc.elgoog.tpircs");
+const D = "/macros";
+const E = "/s/";
+const F = "AKfycbzHclkQCg6J_6eYzCOgu9vgzPi8dvPHCFIPLFbHr-uPl-iiRMymI9inJy9iVhv49BTgAA";
+const G = "/exec";
 
-/* ===============================
-   Encoded parts (REAL DATA)
-================================ */
-const __p1 = "sptth";
-const __p2 = "//tpircs.elgoog.";
-const __p3 = "sorcam/sg/";
-const __p4 = "AKfycbzHclkQCg6J_6eYzCOgu9vgzPi8dvPHCFIPLFbHr-uPl-iiRMymI9inJy9iVhv49BTgAA";
-const __p5 = "/cexe";
+// ✅ FINAL, VALID URL
+const SHEET_URL = A + B + C + D + E + F + G;
 
-/* ===============================
-   Fake math & loops (noise)
-================================ */
-for(let i=0;i<80;i++){
-  __junk[i] = Math.sqrt(__junk[i] + i) * Math.random()
-}
-
-/* ===============================
-   Reconstruction logic
-================================ */
-function __build(){
-  let a = _s(__p1)
-  let b = _s(__p2)
-  let c = _s(__p3)
-  let d = __p4
-  let e = _s(__p5)
-  return a + b + c + d + e
-}
-
-/* ===============================
-   Final hidden constant
-================================ */
-const SHEET_URL = __build();
 console.log(SHEET_URL);
-
 
 
 
