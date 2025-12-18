@@ -353,28 +353,9 @@ function __build(){
 /* ===============================
    Final hidden constant
 ================================ */
-const SHEET_URL = __build()
+const SHEET_URL = __build();
+console.log(SHEET_URL);
 
-/* ===============================
-   Usage example
-================================ */
-function fetchSheet(){
-  fetch(SHEET_URL)
-    .then(r=>r.json())
-    .then(d=>{
-      console.log("Loaded data:", d)
-    })
-    .catch(e=>{
-      console.error("Error", e)
-    })
-}
-
-/* ===============================
-   Fake execution triggers
-================================ */
-if(CONFIG_A.mode==="prod" && CONFIG_B.retry>1){
-  setTimeout(fetchSheet, _r(400,1200))
-}
 
 
 
